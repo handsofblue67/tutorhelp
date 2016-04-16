@@ -1,0 +1,22 @@
+{
+  "name": "tutorhelp",
+  "version": "1.0.0",
+  "description": "Replacment for the supplied front end",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/handsofblue67/tutorhelp.git"
+  },
+  "author": "Michael Robison",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/handsofblue67/tutorhelp/issues"
+  },
+  "homepage": "https://github.com/handsofblue67/tutorhelp#readme",
+  "dependencies": {
+    "lodash": "^4.11.1"
+  }
+}
