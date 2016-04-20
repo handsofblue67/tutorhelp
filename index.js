@@ -15,7 +15,7 @@ function printQuestions(questions) {
 
 setInterval(function() {
     // set id equal to your student id
-    http.get('http://tutorhelp.uvu.edu/api_data.php?action=getquestions&tutorid=10704736', (res) => {
+    http.get('http://tutorhelp.uvu.edu/api_data.php?action=getquestions&tutorid=<uvid>', (res) => {
         res.setEncoding('utf8');
         res.on('data', (chunk) => {
             var data = JSON.parse(chunk);
