@@ -1,7 +1,9 @@
 var http = require('http');
 var _ = require('lodash');
+var fs = require('fs');
 
 var savedQuestions = [];
+var uvid = '';
 
 function printQuestions(questions) {
     console.log('\033c');
@@ -13,19 +15,24 @@ function printQuestions(questions) {
     });
 }
 
+fs.readFile('uvid.txt', (err, data) => {
+    if (err) throw err;
+    uvid = data.toString();
+});
+
 setInterval(function() {
     // set id equal to your student id
-    http.get('http://tutorhelp.uvu.edu/api_data.php?action=getquestions&tutorid=10704736', (res) => {
-        res.setEncoding('utf8');
-        res.on('data', (chunk) => {
-            var data = JSON.parse(chunk);
-            // TODO: change these condidtions to a more simple and lightweight one
-            if (_.differenceWith(data.questions, savedQuestions, _.isEqual).length > 0) {
-                process.stdout.write('\x07');
-                printQuestions(data.questions);
-            } else if (_.differenceWith(savedQuestions, data.questions, _.isEqual).length > 0) {
-                printQuestions(data.Questions);
-            }
-        });
-    }).on('error', (e) => { console.log(`Got error: ${e.message}`); });
+    http.get('http://tutorhelp.uvu.edu/api_data.php?action=getquestions&tutorid=' + uvid, (res) => {
+            res.setEncoding('utf8');
+            res.on('data', (chunk) => {
+                var data = JSON.parse(chunk);
+                // TODO: change these condidtions to a more simple and lightweight one
+                if (_.differenceWith(data.questions, savedQuestions, _.isEqual).length > 0) {
+                    process.stdout.write('\x07');
+                    printQuestions(data.questions);
+                } else if (_.differenceWith(savedQuestions, data.questions, _.isEqual).length > 0) {
+                    printQuestions(data.Questions);
+                }
+            });
+            }).on('error', (e) => { console.log(`Got error: ${e.message}`); });
 }, 5000);
