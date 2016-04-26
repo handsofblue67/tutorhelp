@@ -22,7 +22,7 @@ var tutorHelping = 0;
 getQueue();
 
 rl.on('line', cmd => { 
-    var index = parseInt(cmd) + 1;
+    var index = parseInt(cmd) - 1;
     if ( tutorHelping ) {
         http.get(`http://tutorhelp.uvu.edu/api_data.php?action=finishquestion&questionId=${tutorHelping}`, (res) => {
             res.setEncoding('utf8');
