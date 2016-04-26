@@ -2,15 +2,14 @@ var http = require('http');
 var _ = require('lodash');
 var fs = require('fs');
 
-var savedQuestions = [];
 var uvid = '';
-
+var savedQuestions = [];
 function printQuestions(questions) {
-    console.log('\033c');
+    console.log('\033c'); // clear console
     savedQuestions = _.cloneDeep(questions);
     console.log("Name\t\t\t\tClass\t\t\tTable\t\t\tQuestion");
-    console.log("-----------------------------------------------------------------");
-    savedQuestions.forEach(o => {
+    console.log("------------------------------------------------------------------------------------------");
+    _.forEach(savedQuestions, o => {
         console.log(`${o.studentName}\t\t\t${o.class}\t\t${o.table}\t\t\t${o.question}`);
     });
 }
@@ -25,14 +24,13 @@ setInterval(function() {
     http.get('http://tutorhelp.uvu.edu/api_data.php?action=getquestions&tutorid=' + uvid, (res) => {
             res.setEncoding('utf8');
             res.on('data', (chunk) => {
-                var data = JSON.parse(chunk);
-                // TODO: change these condidtions to a more simple and lightweight one
-                if (_.differenceWith(data.questions, savedQuestions, _.isEqual).length > 0) {
-                    process.stdout.write('\x07');
-                    printQuestions(data.questions);
-                } else if (_.differenceWith(savedQuestions, data.questions, _.isEqual).length > 0) {
-                    printQuestions(data.Questions);
+                var questions = JSON.parse(chunk).questions;
+                if (_.differenceWith(questions, savedQuestions, _.isEqual).length > 0) {
+                    process.stdout.write('\x07'); // bell
+                    printQuestions(questions);
+                } else if (_.differenceWith(savedQuestions, questions, _.isEqual).length > 0) {
+                    printQuestions(questions);
                 }
             });
             }).on('error', (e) => { console.log(`Got error: ${e.message}`); });
-}, 5000);
+}, 10000);
