@@ -44,7 +44,7 @@ rl.on('line', cmd => {
 function getQueue() {
     if ( tutorHelping ) { return; }
     // set id equal to your student id
-    http.get('http://tutorhelp.uvu.edu/api_data.php?action=getquestions&tutorid=' + uvid, (res) => {
+    http.get('http://tutorhelp.uvu.edu/api_data.php?action=getquestions&tutorid=' + uvid + '&center=4', (res) => {
             res.setEncoding('utf8');
             res.on('data', (chunk) => {
                 var data = JSON.parse(chunk);
