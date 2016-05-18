@@ -57,7 +57,10 @@ function getQueue() {
                     printQuestions(data.questions);
                 }
             });
-            }).on('error', (e) => { console.log(`Got error: ${e.message}`); });
+            }).on('error', (e) => { 
+		    console.log(`Got error: ${e.message}`); 
+		    console.log('\x07');
+	    });
 }
 
 
