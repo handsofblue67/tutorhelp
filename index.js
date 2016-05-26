@@ -21,7 +21,7 @@ var tutorHelping = 0;
 
 getQueue();
 
-rl.on('line', cmd => { 
+rl.on('line', cmd => {
     var index = parseInt(cmd) - 1;
     if ( tutorHelping ) {
         http.get(`http://tutorhelp.uvu.edu/api_data.php?action=finishquestion&questionId=${tutorHelping}`, (res) => {
@@ -34,7 +34,7 @@ rl.on('line', cmd => {
             console.log('\033c');
             http.get(`http://tutorhelp.uvu.edu/api_data.php?action=respondquestion&questionId=${savedQuestions[index].id}&tutorUvid=${uvid}`, (res) => {
                 res.setEncoding('utf8');
-                res.on('data', (chunk) => { console.log(`Helping ${savedQuestions[index].studentName}`) }); 
+                res.on('data', (chunk) => { console.log(`Helping ${savedQuestions[index].studentName} at table ${savedQuestions[index].table}`) });
                 tutorHelping = savedQuestions[index].id;
                 });
         }
@@ -57,8 +57,8 @@ function getQueue() {
                     printQuestions(data.questions);
                 }
             });
-            }).on('error', (e) => { 
-		    console.log(`Got error: ${e.message}`); 
+            }).on('error', (e) => {
+		    console.log(`Got error: ${e.message}`);
 		    console.log('\x07');
 	    });
 }
