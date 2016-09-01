@@ -15,61 +15,14 @@ const rl = readline.createInterface({
       output: process.stout
 });
 
-var savedQuestions = [];
 var uvid = '';
-var tutorHelping = 0;
-
-getQueue();
-
-rl.on('line', cmd => {
-    var index = parseInt(cmd) - 1;
-    if ( tutorHelping ) {
-        http.get(`http://tutorhelp.uvu.edu/api_data.php?action=finishquestion&questionId=${tutorHelping}`, (res) => {
-            res.setEncoding('utf8');
-            tutorHelping = 0;
-            getQueue();
-            });
-    } else {
-        if ( index < savedQuestions.length ) {
-            console.log('\033c');
-            http.get(`http://tutorhelp.uvu.edu/api_data.php?action=respondquestion&questionId=${savedQuestions[index].id}&tutorUvid=${uvid}`, (res) => {
-                res.setEncoding('utf8');
-                res.on('data', (chunk) => { console.log(`Helping ${savedQuestions[index].studentName} at table ${savedQuestions[index].table}`) });
-                tutorHelping = savedQuestions[index].id;
-                });
-        }
-    }
-});
-
-function getQueue() {
-    if ( tutorHelping ) { return; }
-    // set id equal to your student id
-    http.get('http://tutorhelp.uvu.edu/api_data.php?action=getquestions&tutorid=' + uvid + '&center=4', (res) => {
-            res.setEncoding('utf8');
-            res.on('data', (chunk) => {
-                var data = JSON.parse(chunk);
-                // TODO: change these condidtions to a more simple and lightweight one
-                if ( !data.questions.length ) { printQuestions(data.questions); }
-                if ( _.differenceWith(data.questions, savedQuestions, _.isEqual ).length > 0) {
-                    process.stdout.write('\x07');
-                    printQuestions(data.questions);
-                } else if ( _.differenceWith(savedQuestions, data.questions, _.isEqual ).length > 0) {
-                    printQuestions(data.questions);
-                }
-            });
-            }).on('error', (e) => {
-		    console.log(`Got error: ${e.message}`);
-		    console.log('\x07');
-	    });
-}
-
-
+var savedQuestions = [];
 function printQuestions(questions) {
-    console.log('\033c');
+    console.log('\033c'); // clear console
     savedQuestions = _.cloneDeep(questions);
     console.log("Name\t\t\t\tClass\t\t\tTable\t\t\tQuestion");
-    console.log("-----------------------------------------------------------------");
-    _.forEach(questions, o => {
+    console.log("------------------------------------------------------------------------------------------");
+    _.forEach(savedQuestions, o => {
         console.log(`${o.studentName}\t\t\t${o.class}\t\t${o.table}\t\t\t${o.question}`);
     });
 }
@@ -79,4 +32,18 @@ fs.readFile('uvid.txt', (err, data) => {
     uvid = data.toString();
 });
 
-setInterval(getQueue, 5000);
+setInterval(function() {
+    // set id equal to your student id
+    http.get('http://tutorhelp.uvu.edu/api_data.php?action=getquestions&tutorid=' + uvid, (res) => {
+            res.setEncoding('utf8');
+            res.on('data', (chunk) => {
+                var questions = JSON.parse(chunk).questions;
+                if (_.differenceWith(questions, savedQuestions, _.isEqual).length > 0) {
+                    process.stdout.write('\x07'); // bell
+                    printQuestions(questions);
+                } else if (_.differenceWith(savedQuestions, questions, _.isEqual).length > 0) {
+                    printQuestions(questions);
+                }
+            });
+            }).on('error', (e) => { console.log(`Got error: ${e.message}`); });
+}, 10000);
