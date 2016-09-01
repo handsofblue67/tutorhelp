@@ -1,9 +1,12 @@
 # tutorhelp
 
 using nodejs v5.10.0 other versions untested
+## Installation
 
-must run npm init
+insert your uvid into a file called uvid.txt
 
-if anyone wants to dockerize this, and node, be my guest
+```shell
+npm install
+```
 
-insert your uvid into a file called uvid.txt 
+ 
